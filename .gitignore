@@ -1,0 +1,44 @@
+# ---------------------------------------------------------------------------
+# Harvested data — DO NOT COMMIT.
+#
+# The certificates and the QR pages carry business owners' names, personal
+# mobile numbers and personal email addresses. The portal publishes them so
+# contractor credentials can be verified; that does not make them ours to
+# republish on a public repo, where they would be indexed and scraped.
+# Keep your output local.
+# ---------------------------------------------------------------------------
+*.pdf
+*.csv
+*.xlsx
+*.xls
+
+# dated output folders created by new-tool/run.py (e.g. 2026-09-21/)
+[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/
+pdf_files/
+
+# ...but the dependency lists are not data
+!requirements.txt
+
+# ---------------------------------------------------------------------------
+# Environments and run artefacts
+# ---------------------------------------------------------------------------
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+run.log
+nohup.out
+error.png
+.playwright-mcp/
+
+# ---------------------------------------------------------------------------
+# OS / editor noise
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
