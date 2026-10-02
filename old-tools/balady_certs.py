@@ -421,6 +421,13 @@ def goto_page(page, frame, n: int, timeout_s: int = 60) -> bool:
     info = frame.locator("body").evaluate(JS_PAGER)
     if info["current"] == n:
         return True
+    if not info["pages"]:
+        # No pagination links in the DOM at all. The portal renders a pager
+        # only when the results overflow one page, so a small result set (a
+        # city with <= 10 matches) has none — and we are already on the only
+        # page there is. Without this, such searches found their rows and then
+        # refused to download any of them.
+        return n == 1
     if n not in info["pages"]:
         return False
 
