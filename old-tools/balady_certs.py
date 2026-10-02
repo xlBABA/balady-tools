@@ -571,12 +571,19 @@ def run(args) -> int:
 
                         nxt = None
                         for row in rows:
+                            # Anything already handled this run — downloaded,
+                            # skipped, or FAILED — must not be picked again.
+                            # A failing row writes no file, so already_have()
+                            # keeps saying "missing" and the loop would retry
+                            # it forever, hammering the portal. Seen on تربة:
+                            # one bad certificate retried 47 times.
+                            if row["uid"] in seen:
+                                continue
                             have = already_have(outdir, row["uid"])
                             if have:
-                                if row["uid"] not in seen:
-                                    seen.add(row["uid"])
-                                    skipped.append(row["uid"])
-                                    log(f"  · {row['uid']} already downloaded ({have.name})")
+                                seen.add(row["uid"])
+                                skipped.append(row["uid"])
+                                log(f"  · {row['uid']} already downloaded ({have.name})")
                                 continue
                             nxt = row
                             break
