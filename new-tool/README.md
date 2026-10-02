@@ -26,13 +26,17 @@ Total ≈ 35 minutes for a full ~100-certificate city.
 
 ## The Excel file
 
-Exactly five columns, in this order:
+Exactly six columns, in this order:
 
-| اسم المنشأة / Company | رقم الهاتف / Phone | الرقم الوطني / Company no. | اسم المالك / Owner | البريد الإلكتروني / Email |
-|---|---|---|---|---|
-| شركة الندى الوطنية | 0512345678 | 7002530819 | ‹اسم المالك› | owner@example.com |
+| اسم المنشأة / Company | رقم الهاتف / Phone | الرقم الوطني / Company no. | تاريخ الانتهاء / Expiry | اسم المالك / Owner | البريد الإلكتروني / Email |
+|---|---|---|---|---|---|
+| شركة الندى الوطنية | 0512345678 | 7002530819 | 23/11/2026 | ‹اسم المالك› | owner@example.com |
 
-Phone and company number are stored as **text**, so Excel cannot eat the leading
+The expiry date comes from the results grid (recorded in `manifest.csv` during
+the download step) and is joined onto the contact data by company number — no
+extra requests are made for it.
+
+Phone, company number and expiry are stored as **text**, so Excel cannot eat the leading
 zero of `05...` or turn `7002530819` into `7.00253E+09`. Sheet is right-to-left,
 header is frozen and filterable.
 
@@ -40,7 +44,8 @@ header is frozen and filterable.
 
 ```bash
 .venv/bin/python run.py                      # ask for the city, do everything
-.venv/bin/python run.py --city جدة            # skip the question
+.venv/bin/python run.py --city جدة            # single-word city name
+.venv/bin/python run.py --city "مكة المكرمة"  # QUOTE names with a space
 .venv/bin/python run.py --limit 5            # small trial
 .venv/bin/python run.py --mobiles-only       # drop any phone not starting 05
 .venv/bin/python run.py --folder riyadh_run  # name the folder yourself
@@ -66,6 +71,9 @@ header is frozen and filterable.
   its results grid to page 1 after every download and only exposes 10 pages.
   To get more, run again with a narrower date range — see `../test3/README.md`
   §4.12 for the full explanation.
+- **Quote city names containing a space** — `"مكة المكرمة"`,
+  `"المدينة المنورة"`, `"حفر الباطن"`. Unquoted, the shell splits the name and
+  argparse rejects the second word. The menu avoids the problem entirely.
 - **One folder per day.** Running twice on the same day reuses that day's
   folder. If you want a second city kept separate, use `--folder`.
 - **This directory is self-contained.** It has its own `.venv` and its own copy

@@ -45,9 +45,40 @@ Also needs **Google Chrome** and **`pdfimages`** (`poppler-utils`).
 
 ## What the output looks like
 
-| اسم المنشأة / Company | رقم الهاتف / Phone | الرقم الوطني / Company no. | اسم المالك / Owner | البريد الإلكتروني / Email |
-|---|---|---|---|---|
-| شركة الندى الوطنية | 0512345678 | 7002530819 | ‹اسم المالك› | ‹email› |
+| اسم المنشأة / Company | رقم الهاتف / Phone | الرقم الوطني / Company no. | تاريخ الانتهاء / Expiry | اسم المالك / Owner | البريد الإلكتروني / Email |
+|---|---|---|---|---|---|
+| شركة الندى الوطنية | 0512345678 | 7002530819 | 23/11/2026 | ‹اسم المالك› | ‹email› |
+
+### Choosing a city, and other options
+
+```bash
+.venv/bin/python run.py                        # asks you to pick a city
+.venv/bin/python run.py --city جدة              # single-word name
+.venv/bin/python run.py --city "مكة المكرمة"    # QUOTE names containing a space
+.venv/bin/python run.py --limit 5              # quick ~2-minute trial
+.venv/bin/python run.py --folder makkah        # name the output folder
+.venv/bin/python run.py --mobiles-only         # keep only 05x phone numbers
+.venv/bin/python run.py --skip-download        # reuse PDFs, redo QR + Excel
+```
+
+| Flag | Default | What it does |
+|---|---|---|
+| `--city` | *prompts you* | which city to search (220 available) |
+| `--limit` | `0` | how many certificates; `0` = as many as reachable (~100) |
+| `--folder` | today's date | output folder name |
+| `--mobiles-only` | off | drop rows whose phone does not start with `05` |
+| `--delay` | `2.0` | seconds between downloads — don't lower it |
+| `--skip-download` | off | skip straight to the QR + Excel steps |
+
+**Quote any city name with a space** — `"مكة المكرمة"`, `"المدينة المنورة"`,
+`"حفر الباطن"`, `"خميس مشيط"`. Without quotes the shell splits it in two and
+argparse rejects the leftover word. Picking from the menu avoids this entirely.
+
+**Output folders are named by date.** Running two cities on the same day would
+put both in the same folder — use `--folder` for the second.
+
+**Everything resumes.** Ctrl-C any time; rerun the same command and it skips
+PDFs already downloaded and contacts already fetched.
 
 ---
 

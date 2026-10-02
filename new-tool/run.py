@@ -54,10 +54,11 @@ EXCEL_COLUMNS = [
     ("facility_name", "اسم المنشأة / Company"),
     ("phone",         "رقم الهاتف / Phone"),
     ("uid",           "الرقم الوطني / Company no."),
+    ("expiry",        "تاريخ الانتهاء / Expiry"),
     ("owner_name",    "اسم المالك / Owner"),
     ("email",         "البريد الإلكتروني / Email"),
 ]
-TEXT_COLUMNS = {"phone", "uid"}       # keep leading zeros / avoid 7.04E+09
+TEXT_COLUMNS = {"phone", "uid", "expiry"}   # keep leading zeros, keep dd/mm/yyyy intact
 
 
 def log(msg: str = "") -> None:
@@ -139,6 +140,21 @@ def build_excel(csv_path: Path, xlsx_path: Path, mobiles_only: bool) -> tuple[in
 
     with csv_path.open(encoding="utf-8-sig", newline="") as fh:
         rows = list(csv.DictReader(fh))
+
+    # The certificate expiry date is not on the QR page — it comes from the
+    # results grid, which the downloader already recorded in manifest.csv.
+    # Join the two on the company number (uid) rather than re-fetching anything.
+    expiry_by_uid: dict[str, str] = {}
+    manifest = csv_path.parent / "manifest.csv"
+    if manifest.exists():
+        with manifest.open(encoding="utf-8-sig", newline="") as fh:
+            for m in csv.DictReader(fh):
+                uid = (m.get("uid") or "").strip()
+                exp = (m.get("expiry") or "").strip()
+                if uid and exp:
+                    expiry_by_uid[uid] = exp
+    for r in rows:
+        r["expiry"] = expiry_by_uid.get((r.get("uid") or "").strip(), "")
 
     clean, dropped = [], 0
     for r in rows:
